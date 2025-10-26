@@ -16,7 +16,7 @@ A connected **user device** (web or mobile) subscribes to the MQTT topic to disp
 
 ## Hardware Setup
 
-<img src="media/imu_circuit.png" width="80%" height="auto">
+<img src="media/imu_circuit.png" width="50%" height="auto">
 
 | IMU | RPi Pin | Function |
 |-----|----------|----------|
