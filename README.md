@@ -17,14 +17,15 @@ A connected **user device** (web app or mobile app) subscribes to this MQTT topi
 
 ## 🔌 Hardware Setup
 
-| Component | Pin | Function |
-|------------|-----|----------|
-| IMU VCC | 3.3V | Power |
-| IMU GND | GND | Ground |
-| IMU SDA | GPIO 2 (Pin 3) | I²C data |
-| IMU SCL | GPIO 3 (Pin 5) | I²C clock |
 
-📊 See the wiring diagram in [`docs/connection_diagram.png`](docs/connection_diagram.png) for details.
+<img src="media/imu_circuit.png" width=80% height="auto">
+
+| IMU | RPI | Function |
+|------------|-----|----------|
+| VCC | 5V | Power |
+| GND | GND | Ground |
+| SDA | GPIO 2 (Pin 3) | I²C data |
+| SCL | GPIO 3 (Pin 5) | I²C clock |
 
 ---
 
