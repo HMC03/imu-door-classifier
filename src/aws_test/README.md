@@ -151,7 +151,7 @@ cd {your-project-directory}
 # Confirmed you are in the root-level of the project, otherwise errors.
 
 # Run the publisher script
-python3 ./src/aws_test/publisher_pi.py
+python ./src/aws_test/publisher_pi.py
 ```
 
 You should see:
@@ -184,7 +184,7 @@ cd {your-project-directory}
 # Confirmed you are in the root-level of the project, otherwise errors.
 
 # Run the publisher script
-python3 ./src/aws_test/receiver.py
+python ./src/aws_test/receiver.py
 ```
 
 You should see:
@@ -214,12 +214,12 @@ Device LED Status: ON
 
 1. **Start the subscriber first** on your laptop/smart phone:
    ```bash
-   python3 ./src/aws_test/receiver.py
+   python ./src/aws_test/receiver.py
    ```
 
 2. **Start the publisher** on Raspberry Pi:
    ```bash
-   python3 ./src/aws_test/publisher_pi.py
+   python ./src/aws_test/publisher_pi.py
    ```
 
 3. You should see LED status messages appearing on the subscriber terminal in real-time
