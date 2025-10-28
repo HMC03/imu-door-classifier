@@ -1,58 +1,46 @@
-from pathlib import Path
+import os
 import numpy as np
-from libsvm.svmutil import svm_load_model, svm_predict
+from libsvm.svmutil import svm_train, svm_save_model, svm_load_model, svm_predict
 
-MODEL_PATH = Path(__file__).parent.parent / "models" / "svm_model.model"
+MODEL_FILE = "configs/model.libsvm"
+TRAINING_FILE = "configs/training_data.csv"
 
-class DoorClassifier:
-    def __init__(self):
-        """Load LIBSVM model or use placeholder heuristic."""
-        if MODEL_PATH.exists():
-            self.model = svm_load_model(str(MODEL_PATH))
-            self.use_model = True
-            print("[INFO] Loaded LIBSVM model.")
-        else:
-            self.model = None
-            self.use_model = False
-            print("[WARNING] No model found. Using heuristic classifier.")
+def save_training_sample(feature, label):
+    """Append a new sample to training data."""
+    os.makedirs("configs", exist_ok=True)
+    with open(TRAINING_FILE, "a") as f:
+        f.write(f"{feature},{label}\n")
 
-    def extract_features(self, accel, gyro):
-        """
-        Convert raw IMU data (ax, ay, az, gx, gy, gz) to a feature vector.
-        """
-        ax, ay, az = accel
-        gx, gy, gz = gyro
+def load_training_data():
+    if not os.path.exists(TRAINING_FILE):
+        return [], []
+    data = np.loadtxt(TRAINING_FILE, delimiter=",")
+    if data.ndim == 1:  # only one row
+        data = np.expand_dims(data, axis=0)
+    X = data[:, 0].tolist()
+    y = data[:, 1].astype(int).tolist()
+    return X, y
 
-        accel_mag = np.sqrt(ax**2 + ay**2 + az**2)
-        gyro_mag = np.sqrt(gx**2 + gy**2 + gz**2)
+def train_model():
+    """Train an SVM model from stored samples."""
+    X, y = load_training_data()
+    if len(X) < 2:
+        print("Not enough samples to train.")
+        return
+    model = svm_train(y, [[x] for x in X], "-t 0 -c 1")  # linear kernel
+    os.makedirs("configs", exist_ok=True)
+    svm_save_model(MODEL_FILE, model)
+    print(f"Model trained and saved to {MODEL_FILE}")
 
-        # Feature vector for LIBSVM: simple 1D array
-        return np.array([accel_mag, gyro_mag])
+def load_model():
+    if not os.path.exists(MODEL_FILE):
+        print("Model not found. Train it first.")
+        return None
+    return svm_load_model(MODEL_FILE)
 
-    def classify(self, accel, gyro):
-        """
-        Predicts the door state using the LIBSVM model.
-        """
-        features = self.extract_features(accel, gyro)
-
-        if self.use_model:
-            # LIBSVM expects a list of feature vectors
-            p_label, p_acc, p_val = svm_predict([0], [features.tolist()], self.model, '-q')
-            label = "open" if int(p_label[0]) == 1 else "closed"
-        else:
-            # Placeholder heuristic when model isn't available
-            accel_mag = features[0]
-            label = "open" if accel_mag > 1.1 else "closed"
-
-        return label
-
-
-if __name__ == "__main__":
-    clf = DoorClassifier()
-
-    # Simulated IMU samples
-    accel_sample = (0.01, 0.05, 0.98)
-    gyro_sample = (0.1, -0.3, 0.2)
-
-    state = clf.classify(accel_sample, gyro_sample)
-    print("Predicted door state:", state)
+def predict(feature):
+    model = load_model()
+    if model is None:
+        return None
+    label, _, _ = svm_predict([0], [[feature]], model, "-q")
+    return int(label[0])
