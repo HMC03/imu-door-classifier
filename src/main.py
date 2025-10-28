@@ -13,9 +13,11 @@ def main():
 
     if choice == "1":
         calibrate()
+
     elif choice == "2":
+        print("Training mode: label states as 0=closed, 1=open, 2=idle, q=quit")
         while True:
-            label = input("Label this state (0=closed, 1=open, q=quit): ")
+            label = input("Label this state (0/1/2/q): ")
             if label.lower() == "q":
                 break
             print("Recording window...")
@@ -23,15 +25,20 @@ def main():
             save_training_sample(feature, label)
             print(f"Saved sample: feature={feature:.3f}, label={label}")
         train_model()
+
     elif choice == "3":
         prev_state = None
         while True:
             feature = read_window(1.0)
             state = predict(feature)
-            if state is not None and state != prev_state:
+            if state is None:
+                continue
+
+            # Only announce transitions (ignore 'idle')
+            if state != prev_state and state != 2:
                 if state == 1:
                     print("Door opened!")
-                else:
+                elif state == 0:
                     print("Door closed!")
                 prev_state = state
             time.sleep(0.5)

@@ -15,17 +15,17 @@ def load_training_data():
     if not os.path.exists(TRAINING_FILE):
         return [], []
     data = np.loadtxt(TRAINING_FILE, delimiter=",")
-    if data.ndim == 1:  # only one row
+    if data.ndim == 1:
         data = np.expand_dims(data, axis=0)
     X = data[:, 0].tolist()
     y = data[:, 1].astype(int).tolist()
     return X, y
 
 def train_model():
-    """Train an SVM model from stored samples."""
+    """Train an SVM model from stored samples (0=closed, 1=open, 2=idle)."""
     X, y = load_training_data()
-    if len(X) < 2:
-        print("Not enough samples to train.")
+    if len(X) < 3:
+        print("Not enough samples to train (need at least one per class).")
         return
     model = svm_train(y, [[x] for x in X], "-t 0 -c 1")  # linear kernel
     os.makedirs("configs", exist_ok=True)
