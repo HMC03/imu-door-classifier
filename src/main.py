@@ -2,6 +2,9 @@ import time
 from imu_read import read_window, calibrate
 from classifier import predict, save_training_sample, train_model
 
+WINDOW_DURATION = 3.0  # seconds, change here to 2.0 or 3.0, etc.
+SAMPLE_RATE = 50       # samples per second
+
 def main():
     print("\nIMU Door Classifier")
     print("===================")
@@ -12,7 +15,7 @@ def main():
     choice = input("Select an option: ")
 
     if choice == "1":
-        calibrate()
+        calibrate(WINDOW_DURATION)
 
     elif choice == "2":
         print("Training mode: label states as 0=closed, 1=open, 2=idle, q=quit")
@@ -21,15 +24,15 @@ def main():
             if label.lower() == "q":
                 break
             print("Recording window...")
-            feature = read_window(1.0)
-            save_training_sample(feature, label)
+            feature = read_window(window_sec=WINDOW_DURATION, sample_rate=SAMPLE_RATE)
+            save_training_sample(feature, int(label))
             print(f"Saved sample: feature={feature:.3f}, label={label}")
         train_model()
 
     elif choice == "3":
         prev_state = None
         while True:
-            feature = read_window(1.0)
+            feature = read_window(window_sec=WINDOW_DURATION, sample_rate=SAMPLE_RATE)
             state = predict(feature)
             if state is None:
                 continue
