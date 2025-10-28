@@ -50,12 +50,13 @@ def load_calibration():
     return 0.0
 
 def read_window(window_sec=1.0, sample_rate=50):
-    """Sum of calibrated gyro_y values over a window."""
+    """Return angular displacement in degrees over the window."""
     offset = load_calibration()
+    dt = 1 / sample_rate
+    total_deg = 0.0
     num_samples = int(window_sec * sample_rate)
-    total = 0.0
     for _ in range(num_samples):
         gyro_y = read_gyro_y() - offset
-        total += gyro_y
-        time.sleep(1 / sample_rate)
-    return total
+        total_deg += gyro_y * dt  # convert °/s to degrees over dt
+        time.sleep(dt)
+    return total_deg
