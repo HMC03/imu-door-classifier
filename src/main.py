@@ -1,8 +1,10 @@
 import time
 from imu_read import read_window, calibrate
 from classifier import predict, save_training_sample, train_model
+from mqtt_publisher import connect_mqtt, publish_door_state
 
-WINDOW_DURATION = 3.0  # seconds, change here to 2.0 or 3.0, etc.
+# Window and sample settings
+WINDOW_DURATION = 3.0  # seconds, change to 2.0 or 3.0 if desired
 SAMPLE_RATE = 50       # samples per second
 
 def main():
@@ -30,7 +32,10 @@ def main():
         train_model()
 
     elif choice == "3":
+        # Connect to AWS MQTT
+        mqtt_connection = connect_mqtt()
         prev_state = None
+
         while True:
             feature = read_window(window_sec=WINDOW_DURATION, sample_rate=SAMPLE_RATE)
             state = predict(feature)
@@ -41,9 +46,12 @@ def main():
             if state != prev_state and state != 2:
                 if state == 1:
                     print("Door opened!")
+                    publish_door_state(mqtt_connection, "open")
                 elif state == 0:
                     print("Door closed!")
+                    publish_door_state(mqtt_connection, "closed")
                 prev_state = state
+
             time.sleep(0.5)
     else:
         print("Invalid option.")
