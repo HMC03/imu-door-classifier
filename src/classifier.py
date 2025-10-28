@@ -1,18 +1,20 @@
 import os
 import numpy as np
 from libsvm.svmutil import svm_train, svm_save_model, svm_load_model, svm_predict
+from pathlib import Path
 
-MODEL_FILE = "configs/model.libsvm"
-TRAINING_FILE = "configs/training_data.csv"
+CONFIG_DIR = Path(__file__).parent / "configs"
+MODEL_FILE = CONFIG_DIR / "model.libsvm"
+TRAINING_FILE = CONFIG_DIR / "training_data.csv"
+os.makedirs(CONFIG_DIR, exist_ok=True)
 
 def save_training_sample(feature, label):
     """Append a new sample to training data."""
-    os.makedirs("configs", exist_ok=True)
     with open(TRAINING_FILE, "a") as f:
         f.write(f"{feature},{label}\n")
 
 def load_training_data():
-    if not os.path.exists(TRAINING_FILE):
+    if not TRAINING_FILE.exists():
         return [], []
     data = np.loadtxt(TRAINING_FILE, delimiter=",")
     if data.ndim == 1:
@@ -28,12 +30,11 @@ def train_model():
         print("Not enough samples to train (need at least one per class).")
         return
     model = svm_train(y, [[x] for x in X], "-t 0 -c 1")  # linear kernel
-    os.makedirs("configs", exist_ok=True)
     svm_save_model(MODEL_FILE, model)
     print(f"Model trained and saved to {MODEL_FILE}")
 
 def load_model():
-    if not os.path.exists(MODEL_FILE):
+    if not MODEL_FILE.exists():
         print("Model not found. Train it first.")
         return None
     return svm_load_model(MODEL_FILE)
