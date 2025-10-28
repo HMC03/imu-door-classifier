@@ -3,7 +3,7 @@ import numpy as np
 from libsvm.svmutil import svm_train, svm_save_model, svm_load_model, svm_predict
 from pathlib import Path
 
-CONFIG_DIR = Path(__file__).parent / "configs"
+CONFIG_DIR = Path(__file__).parent.parent / "configs"
 MODEL_FILE = CONFIG_DIR / "model.libsvm"
 TRAINING_FILE = CONFIG_DIR / "training_data.csv"
 os.makedirs(CONFIG_DIR, exist_ok=True)

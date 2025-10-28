@@ -7,7 +7,7 @@ from awsiot import mqtt_connection_builder
 # Configuration for AWS IoT
 ENDPOINT = "a23t95b48l3151-ats.iot.us-east-2.amazonaws.com"
 CLIENT_ID = "imu_door_publisher"
-CERT_DIR = Path(__file__).parent / "certs"
+CERT_DIR = Path(__file__).parent.parent / "certs"
 PATH_TO_CERT = CERT_DIR / "door-certificate.pem.crt"
 PATH_TO_KEY = CERT_DIR / "door-private.pem.key"
 PATH_TO_ROOT = CERT_DIR / "AmazonRootCA1.pem"

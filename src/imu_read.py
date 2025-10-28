@@ -6,7 +6,7 @@ import numpy as np
 import os
 
 # Paths
-CONFIG_DIR = Path(__file__).parent / "configs"
+CONFIG_DIR = Path(__file__).parent.parent / "configs"
 CALIBRATION_FILE = CONFIG_DIR / "calibration.json"
 os.makedirs(CONFIG_DIR, exist_ok=True)
 
