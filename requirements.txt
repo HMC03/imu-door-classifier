@@ -3,4 +3,4 @@ python-dotenv~=1.1.1
 numpy
 smbus
 libsvm-official
-paho-mqtt
+flask

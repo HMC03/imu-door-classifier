@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Door Status Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Door Status Dashboard</h1>
+        <div class="status">
+            <h2>Current State: <span id="state">{{ state|title }}</span></h2>
+            <p>Last Update: <span id="timestamp">{{ timestamp or 'N/A' }}</span></p>
+        </div>
+        <div class="log">
+            <h3>Event Log (Last 5)</h3>
+            <ul id="log">
+                {% for event in log %}
+                    <li>{{ event }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <script>
+        const eventSource = new EventSource("/events");
+        eventSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            document.getElementById("state").textContent = data.state.charAt(0).toUpperCase() + data.state.slice(1);
+            document.getElementById("timestamp").textContent = data.timestamp || 'N/A';
+            const logUl = document.getElementById("log");
+            logUl.innerHTML = '';
+            data.log.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = item;
+                logUl.appendChild(li);
+            });
+        };
+    </script>
+</body>
+</html>
