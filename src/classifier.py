@@ -30,14 +30,14 @@ def train_model():
         print("Not enough samples to train (need at least one per class).")
         return
     model = svm_train(y, [[x] for x in X], "-t 0 -c 1")  # linear kernel
-    svm_save_model(MODEL_FILE, model)
+    svm_save_model(str(MODEL_FILE), model)
     print(f"Model trained and saved to {MODEL_FILE}")
 
 def load_model():
     if not MODEL_FILE.exists():
         print("Model not found. Train it first.")
         return None
-    return svm_load_model(MODEL_FILE)
+    return svm_load_model(str(MODEL_FILE))
 
 def predict(feature):
     model = load_model()
